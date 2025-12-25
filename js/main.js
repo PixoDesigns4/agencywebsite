@@ -168,20 +168,20 @@ document.addEventListener("DOMContentLoaded", function () {
         const menuFrame = document.querySelector('.mil-menu-frame');
         const btnFrame = document.querySelector('.mil-buttons-tp-frame');
         const tp2 = document.querySelector('.mil-top-panel-2');
-    
+
         // Toggle Menu
         if (menuBtn) {
             menuBtn.classList.toggle('mil-active');
             menuFrame.classList.toggle('mil-active');
             btnFrame.classList.toggle('mil-active');
             tp2.classList.toggle('mil-menu-open');
-        } 
+        }
         // Close menu if clicked outside
         else if (!event.target.closest('.mil-menu-frame') && menuFrame.classList.contains('mil-active')) {
             closeMenu();
         }
     });
-    
+
     // Function to close the menu
     function closeMenu() {
         document.querySelector('.mil-menu-btn').classList.remove('mil-active');
@@ -189,12 +189,12 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelector('.mil-buttons-tp-frame').classList.remove('mil-active');
         document.querySelector('.mil-top-panel-2').classList.remove('mil-menu-open');
     }
-    
+
     // Handle menu link clicks
     document.querySelectorAll('.mil-main-menu li a').forEach(link => {
         link.addEventListener('click', function (event) {
             const href = this.getAttribute('href');
-    
+
             if (isValidHref(href)) {
                 closeMenu();
             } else {
@@ -202,30 +202,30 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
-    
+
     // Validate link href
     function isValidHref(href) {
         return href && href.trim() !== '' && href.length > 1 && !/^#(\.|$)/.test(href);
     }
-    
+
     // Handle dropdowns
     document.querySelectorAll('.mil-has-children > a').forEach(link => {
         link.addEventListener('click', function (event) {
             const parentElement = link.parentElement;
             const isActive = parentElement.classList.contains('mil-active');
             const hasSubmenu = parentElement.querySelector('ul');
-    
+
             if (hasSubmenu) {
                 event.stopPropagation();
                 event.preventDefault(); // Only prevent default if there is a submenu
-    
+
                 // Collapse all dropdowns
                 document.querySelectorAll('.mil-has-children').forEach(el => {
                     const ul = el.querySelector('ul');
                     el.classList.remove('mil-active');
                     if (ul) ul.style.maxHeight = '0';
                 });
-    
+
                 // Expand the clicked dropdown if not active
                 if (!isActive) {
                     parentElement.classList.add('mil-active');
@@ -235,28 +235,28 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
-    
+
     // Handle top panel scroll behavior
     let lastScrollTop = 0;
-    
+
     window.addEventListener('scroll', () => {
         const topPanel = document.querySelector('.mil-top-panel-2');
         const menuFrame = document.querySelector('.mil-menu-frame-2');
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    
+
         if (menuFrame.classList.contains('mil-active')) {
             return; // Stop execution if .mil-active class is present
         }
-    
+
         if (scrollTop > lastScrollTop) {
             topPanel.classList.add('mil-scroll');
         } else if (scrollTop < lastScrollTop && scrollTop === 0) {
             topPanel.classList.remove('mil-scroll');
         }
-    
+
         lastScrollTop = Math.max(0, scrollTop);
     });
-    
+
 
 
     /* -------------------------------------------
@@ -726,7 +726,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.querySelector('.mil-buttons-tp-frame').classList.remove('mil-active');
                     document.querySelector('.mil-top-panel-2').classList.remove('mil-menu-open');
                 } else {
-                    event.preventDefault(); 
+                    event.preventDefault();
                 }
             });
         });
@@ -738,7 +738,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll('.mil-has-children > a').forEach(link => {
             link.addEventListener('click', function (event) {
                 event.stopPropagation();
-                event.preventDefault(); 
+                event.preventDefault();
 
                 const parentElement = link.parentElement;
                 const isActive = parentElement.classList.contains('mil-active');
@@ -1112,95 +1112,5 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
-
-    });
-
-    /* -------------------------------------------
-
-    CMS Logic
-
-    ------------------------------------------- */
-    async function loadCMS() {
-        // 1. Blog Listing
-        const blogWrapper = document.getElementById('cms-blog-wrapper');
-        if (blogWrapper) {
-            try {
-                const response = await fetch('data/blogs.json');
-                const data = await response.json();
-                
-                // Clear only if we successfully got data, otherwise keep static placeholder
-                if(data.items.length > 0) {
-                     blogWrapper.innerHTML = ''; 
-                }
-
-                data.items.forEach(post => {
-                    const card = `
-                        <div class="swiper-slide">
-                            <div class="mil-blog-card">
-                                <div class="mil-cover mil-up">
-                                    <div class="mil-hover-frame">
-                                        <img src="${post.image}" alt="${post.title}" class="mil-scale-img" data-value-1="1.15" data-value-2="1">
-                                    </div>
-                                    <div class="mil-badges">
-                                        <div class="mil-category">${post.category}</div>
-                                        <div class="mil-date">${new Date(post.date).toLocaleDateString()}</div>
-                                    </div>
-                                </div>
-                                <a href="publication-frl.html?id=${post.id}" class="mil-descr mil-c-gone">
-                                    <div class="mil-text-frame">
-                                        <h4 class="mil-head4 mil-max-2row-text mil-mb20 mil-up">${post.title}</h4>
-                                        <p class="mil-text-md mil-max-2row-text mil-up">${post.body.substring(0, 100)}...</p>
-                                    </div>
-                                    <div class="mil-up mil-768-gone">
-                                        <div class="mil-stylized-btn">
-                                            <i class="fal fa-arrow-up"></i>
-                                            <span>Read more</span>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    `;
-                    blogWrapper.insertAdjacentHTML('beforeend', card);
-                });
-                
-                // Re-initialize swiper if needed (existing swiper instance might need update)
-                // For this template, the Swiper is initialized safely.
-            } catch (error) {
-                console.error("Error loading blogs:", error);
-            }
-        }
-
-        // 2. Blog Detail
-        const postContainer = document.getElementById('cms-post-container');
-        if (postContainer) {
-            const urlParams = new URLSearchParams(window.location.search);
-            const postId = urlParams.get('id');
-            
-            if (postId) {
-                 try {
-                    const response = await fetch('data/blogs.json');
-                    const data = await response.json();
-                    const post = data.items.find(p => p.id === postId);
-                    
-                    if (post) {
-                        document.title = post.title + " - PixoDesigns";
-                        document.getElementById('cms-post-title').innerText = post.title;
-                        
-                        // Simple body formatting
-                        document.getElementById('cms-post-body').innerHTML = `<p class="mil-text-xl mil-m1 mil-mb60 mil-up">${post.body}</p>`;
-                        
-                        // Background image logic if applicable
-                        const heroBg = document.getElementById('cms-post-image');
-                        if(heroBg) heroBg.src = post.image;
-                    }
-                } catch (error) {
-                    console.error("Error loading post:", error);
-                }
-            }
-        }
-    }
-
-    loadCMS();
 
 });
