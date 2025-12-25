@@ -1113,4 +1113,94 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    });
+
+    /* -------------------------------------------
+
+    CMS Logic
+
+    ------------------------------------------- */
+    async function loadCMS() {
+        // 1. Blog Listing
+        const blogWrapper = document.getElementById('cms-blog-wrapper');
+        if (blogWrapper) {
+            try {
+                const response = await fetch('data/blogs.json');
+                const data = await response.json();
+                
+                // Clear only if we successfully got data, otherwise keep static placeholder
+                if(data.items.length > 0) {
+                     blogWrapper.innerHTML = ''; 
+                }
+
+                data.items.forEach(post => {
+                    const card = `
+                        <div class="swiper-slide">
+                            <div class="mil-blog-card">
+                                <div class="mil-cover mil-up">
+                                    <div class="mil-hover-frame">
+                                        <img src="${post.image}" alt="${post.title}" class="mil-scale-img" data-value-1="1.15" data-value-2="1">
+                                    </div>
+                                    <div class="mil-badges">
+                                        <div class="mil-category">${post.category}</div>
+                                        <div class="mil-date">${new Date(post.date).toLocaleDateString()}</div>
+                                    </div>
+                                </div>
+                                <a href="publication-frl.html?id=${post.id}" class="mil-descr mil-c-gone">
+                                    <div class="mil-text-frame">
+                                        <h4 class="mil-head4 mil-max-2row-text mil-mb20 mil-up">${post.title}</h4>
+                                        <p class="mil-text-md mil-max-2row-text mil-up">${post.body.substring(0, 100)}...</p>
+                                    </div>
+                                    <div class="mil-up mil-768-gone">
+                                        <div class="mil-stylized-btn">
+                                            <i class="fal fa-arrow-up"></i>
+                                            <span>Read more</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    blogWrapper.insertAdjacentHTML('beforeend', card);
+                });
+                
+                // Re-initialize swiper if needed (existing swiper instance might need update)
+                // For this template, the Swiper is initialized safely.
+            } catch (error) {
+                console.error("Error loading blogs:", error);
+            }
+        }
+
+        // 2. Blog Detail
+        const postContainer = document.getElementById('cms-post-container');
+        if (postContainer) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('id');
+            
+            if (postId) {
+                 try {
+                    const response = await fetch('data/blogs.json');
+                    const data = await response.json();
+                    const post = data.items.find(p => p.id === postId);
+                    
+                    if (post) {
+                        document.title = post.title + " - PixoDesigns";
+                        document.getElementById('cms-post-title').innerText = post.title;
+                        
+                        // Simple body formatting
+                        document.getElementById('cms-post-body').innerHTML = `<p class="mil-text-xl mil-m1 mil-mb60 mil-up">${post.body}</p>`;
+                        
+                        // Background image logic if applicable
+                        const heroBg = document.getElementById('cms-post-image');
+                        if(heroBg) heroBg.src = post.image;
+                    }
+                } catch (error) {
+                    console.error("Error loading post:", error);
+                }
+            }
+        }
+    }
+
+    loadCMS();
+
 });

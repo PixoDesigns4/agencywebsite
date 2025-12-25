@@ -1,0 +1,28 @@
+backend:
+  name: github
+  repo: PixoDesigns4/agencywebsite
+  branch: main # Branch to update (optional; defaults to master)
+
+media_folder: "img/blog" # Media files will be stored in the repo under img/blog
+public_folder: "/img/blog" # The src attribute for uploaded media will begin with /img/blog
+
+collections:
+  - name: "content"
+    label: "Content"
+    files:
+      - name: "blogs"
+        label: "Blog Posts"
+        file: "data/blogs.json"
+        description: "List of all blog posts"
+        fields:
+          - label: "Posts"
+            name: "items"
+            widget: "list"
+            fields:
+              - {label: "ID", name: "id", widget: "string"}
+              - {label: "Title", name: "title", widget: "string"}
+              - {label: "Slug", name: "slug", widget: "string", hint: "URL friendly name (e.g. my-post-title)"}
+              - {label: "Date", name: "date", widget: "datetime"}
+              - {label: "Category", name: "category", widget: "select", options: ["Design", "Branding", "UI/UX", "Development", "Art", "Interior"]}
+              - {label: "Featured Image", name: "image", widget: "image"}
+              - {label: "Body", name: "body", widget: "markdown"}
